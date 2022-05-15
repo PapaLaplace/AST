@@ -5,6 +5,7 @@ from librosa.core.spectrum import stft, istft
 from librosa import fft_frequencies
 from tqdm import tqdm
 import json
+import os
 
 
 from config.settings import PROCESSING
@@ -141,8 +142,8 @@ def split_audio(original_fname, target_fname,
                 input_folder=PROCESSING.original_audio_folder,
                 output_folder=PROCESSING.split_audio_folder,
                 test_length_sec=PROCESSING.test_sample_length_seconds):
-    x_rate, x = wavfile.read(input_folder + original_fname)
-    y_rate, y = wavfile.read(input_folder + target_fname)
+    x_rate, x = wavfile.read(input_folder / original_fname)
+    y_rate, y = wavfile.read(input_folder / target_fname)
 
     if x_rate != y_rate:
         raise Exception("Sampling rates aren't equal for the original and the target audio")
@@ -154,10 +155,10 @@ def split_audio(original_fname, target_fname,
     x_train, x_test = x[:-test_slice], x[-test_slice:]
     y_train, y_test = y[:-test_slice], y[-test_slice:]
 
-    wavfile.write(f'{output_folder}x_train.wav', rate, x_train)
-    wavfile.write(f'{output_folder}x_test.wav', rate, x_test)
-    wavfile.write(f'{output_folder}y_train.wav', rate, y_train)
-    wavfile.write(f'{output_folder}y_test.wav', rate, y_test)
+    wavfile.write(output_folder / "x_train.wav", rate, x_train)
+    wavfile.write(output_folder / "x_test.wav", rate, x_test)
+    wavfile.write(output_folder / "y_train.wav", rate, y_train)
+    wavfile.write(output_folder / "y_test.wav", rate, y_test)
 
 
 def slice_tensor(tensor, batch_width):
@@ -176,35 +177,35 @@ def get_split_tensors(input_folder=PROCESSING.split_audio_folder,
     max_abs = {}
 
     for fname in tqdm(['x_train.wav', 'y_train.wav']):
-        freq, sg = wav_to_spectrogram(input_folder + fname)(win_length=win_length, n_fft=n_fft, return_freq=True)
+        freq, sg = wav_to_spectrogram(input_folder / fname)(win_length=win_length, n_fft=n_fft, return_freq=True)
         scaled_sg = log_scale(freq, sg)
         tensor, scalar = spectrogram_to_tensor(scaled_sg)
 
         max_abs[fname.split('_')[0]] = scalar
 
         slices = slice_tensor(tensor, slice_width)
-        np.save(f"{output_folder}{fname.split('.')[0]}.npy", slices)
+        np.save(os.path.join(output_folder, f"{fname.split('.')[0]}.npy"), slices)
 
     for fname in tqdm(['x_test.wav', 'y_test.wav']):
-        freq, sg = wav_to_spectrogram(input_folder + fname)(win_length=win_length, n_fft=n_fft, return_freq=True)
+        freq, sg = wav_to_spectrogram(input_folder / fname)(win_length=win_length, n_fft=n_fft, return_freq=True)
         scaled_sg = log_scale(freq, sg)
         tensor, _ = spectrogram_to_tensor(scaled_sg, max_abs[fname.split('_')[0]])
 
         slices = slice_tensor(tensor, slice_width)
-        np.save(f"{output_folder}{fname.split('.')[0]}.npy", slices)
+        np.save(os.path.join(output_folder, f"{fname.split('.')[0]}.npy"), slices)
 
-    with open(f'{output_folder}scalars.json', 'w') as f:
+    with open(output_folder / "scalars.json", 'w') as f:
         json.dump(max_abs, f)
 
 
 def load_split_tensors(input_folder):
-    x_train = np.load(f'{input_folder}x_train.npy')
-    y_train = np.load(f'{input_folder}y_train.npy')
+    x_train = np.load(input_folder / "x_train.npy")
+    y_train = np.load(input_folder / "y_train.npy")
 
-    x_test = np.load(f'{input_folder}x_test.npy')
-    y_test = np.load(f'{input_folder}y_test.npy')
+    x_test = np.load(input_folder / "x_test.npy")
+    y_test = np.load(input_folder / "y_test.npy")
 
-    with open(f'{input_folder}scalars.json', 'r') as f:
+    with open(input_folder / "scalars.json", 'r') as f:
         scalars = json.load(f)
 
     return x_train, y_train, x_test, y_test, scalars

@@ -1,13 +1,14 @@
 from prodict import Prodict
+from pathlib import Path
 
 
-REPO_PATH = '/home/odushko/study-repos/AST'
+REPO_PATH = Path(__file__).parent.parent.absolute()
 
 
 class PROCESSING(Prodict):
-    original_audio_folder: str = f'{REPO_PATH}/data/original_audio/'
-    split_audio_folder: str = f'{REPO_PATH}/data/train_data/audio/'
-    tensors_folder: str = f'{REPO_PATH}/data/train_data/tensors/'
+    original_audio_folder: Path = REPO_PATH / Path("data/original_audio/")
+    split_audio_folder: Path = REPO_PATH / Path("data/train_data/audio/")
+    tensors_folder: Path = REPO_PATH / Path("data/train_data/tensors/")
 
     sampling_rate: int = 44100
     win_length: int = 1022

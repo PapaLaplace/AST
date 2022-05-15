@@ -15,16 +15,16 @@ def get_encoder(input_shape, code_size, use_dropout=True):
     if use_dropout:
         encoder.add(L.Dropout(0.3))
 
-    encoder.add(L.Conv2D(filters=32, kernel_size=(3, 3), padding='same', activation='elu'))
+    encoder.add(L.Conv2D(filters=32, kernel_size=(4, 4), padding='same', activation='elu'))
     encoder.add(L.MaxPool2D())
 
-    encoder.add(L.Conv2D(filters=64, kernel_size=(3, 3), padding='same', activation='elu'))
+    encoder.add(L.Conv2D(filters=64, kernel_size=(4, 4), padding='same', activation='elu'))
     encoder.add(L.MaxPool2D())
 
-    encoder.add(L.Conv2D(filters=128, kernel_size=(3, 3), padding='same', activation='elu'))
+    encoder.add(L.Conv2D(filters=128, kernel_size=(4, 4), padding='same', activation='elu'))
     encoder.add(L.MaxPool2D())
 
-    encoder.add(L.Conv2D(filters=256, kernel_size=(3, 3), padding='same', activation='elu'))
+    encoder.add(L.Conv2D(filters=256, kernel_size=(4, 4), padding='same', activation='elu'))
     encoder.add(L.MaxPool2D())
 
     encoder.add(L.Flatten())

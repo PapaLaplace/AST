@@ -19,10 +19,13 @@ class PROCESSING(Prodict):
     num_samples: int = None
 
     slice_width = 256
-    test_sample_length_seconds: int = 10
+    test_sample_length_seconds: int = 30
 
 
 class MODEL(Prodict):
+    enc_weights: Path = REPO_PATH / "weights/enc.h5"
+    dec_weights: Path = REPO_PATH / "weights/dec.h5"
+
     input_shape: tuple = (PROCESSING.n_fft // 2 + 1, PROCESSING.slice_width, 2)
     code_size: int = 256
 

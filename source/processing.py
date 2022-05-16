@@ -30,7 +30,6 @@ def log_scale_at_t(freq, log_base, num_samples):
         new_energy_at_t = f(freq_logspace)
 
         return np.append(new_energy_at_t, energy_at_t[-1])
-
     return new_freq, _log_scale_at_t
 
 
@@ -55,7 +54,6 @@ def inverse_log_scale_at_t(freq, log_base, num_samples):
         new_energy_at_t = f(freq_linspace)
 
         return np.append(new_energy_at_t, energy_at_t[-1])
-
     return new_freq, _inverse_log_scale_at_t
 
 
@@ -141,7 +139,8 @@ def tensor_to_spectrogram(tensor, scalar, debug=False):
 def split_audio(original_fname, target_fname,
                 input_folder=PROCESSING.original_audio_folder,
                 output_folder=PROCESSING.split_audio_folder,
-                test_length_sec=PROCESSING.test_sample_length_seconds):
+                test_length_sec=PROCESSING.test_sample_length_seconds,
+                train_percentage_to_use=1):
     x_rate, x = wavfile.read(input_folder / original_fname)
     y_rate, y = wavfile.read(input_folder / target_fname)
 
@@ -154,6 +153,14 @@ def split_audio(original_fname, target_fname,
 
     x_train, x_test = x[:-test_slice], x[-test_slice:]
     y_train, y_test = y[:-test_slice], y[-test_slice:]
+
+    x_train_l_slice = x_train[:int(len(x_train) * train_percentage_to_use / 2)]
+    x_train_r_slice = x_train[-int(len(x_train) * train_percentage_to_use / 2):]
+    x_train = np.concatenate((x_train_l_slice, x_train_r_slice), axis=0)
+
+    y_train_l_slice = y_train[:int(len(y_train) * train_percentage_to_use / 2)]
+    y_train_r_slice = y_train[-int(len(y_train) * train_percentage_to_use / 2):]
+    y_train = np.concatenate((y_train_l_slice, y_train_r_slice), axis=0)
 
     wavfile.write(output_folder / "x_train.wav", rate, x_train)
     wavfile.write(output_folder / "x_test.wav", rate, x_test)

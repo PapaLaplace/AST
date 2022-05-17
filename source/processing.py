@@ -77,7 +77,7 @@ def wav_to_spectrogram(filename, debug=False):
         print(f"signal shape: {sig.shape}")
         print(f"sample rate: {rate}\n")
 
-    def get_spectrogram(n_fft=2048, win_length=2048, return_freq=False, **kwargs):
+    def get_spectrogram(n_fft=PROCESSING.n_fft, win_length=PROCESSING.win_length, return_freq=False, **kwargs):
         spectr = stft(sig, n_fft=n_fft, win_length=win_length, **kwargs)
 
         if debug:
@@ -91,11 +91,11 @@ def wav_to_spectrogram(filename, debug=False):
     return get_spectrogram
 
 
-def spectrogram_to_wav(spectr, rate, debug=False):
+def spectrogram_to_wav(spectr, rate=PROCESSING.sampling_rate, debug=False):
     if debug:
         print(f"spectrogram shape: {spectr.shape}\n")
 
-    def get_wav(n_fft=2048, win_length=2048, **kwargs):
+    def get_wav(n_fft=PROCESSING.n_fft, win_length=PROCESSING.win_length, **kwargs):
         sig = istft(spectr, n_fft=n_fft, win_length=win_length, **kwargs)
 
         if debug:

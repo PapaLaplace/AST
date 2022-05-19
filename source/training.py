@@ -84,3 +84,5 @@ def get_model(input_shape=MODEL.input_shape, code_size=MODEL.code_size,
 def save_weights(encoder, decoder):
     encoder.save_weights(MODEL.enc_weights)
     decoder.save_weights(MODEL.dec_weights)
+
+

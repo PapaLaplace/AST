@@ -26,6 +26,8 @@ class MODEL(Prodict):
     enc_weights: Path = REPO_PATH / "weights/enc.h5"
     dec_weights: Path = REPO_PATH / "weights/dec.h5"
 
+    logs_dir: Path = REPO_PATH / "logs/"
+
     input_shape: tuple = (PROCESSING.n_fft // 2 + 1, PROCESSING.slice_width, 2)
     code_size: int = 256
 

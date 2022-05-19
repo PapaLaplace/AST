@@ -8,3 +8,4 @@ prodict~=0.8.18
 tensorflow~=2.8.0
 tqdm~=4.64.0
 keras~=2.8.0
+pydot
